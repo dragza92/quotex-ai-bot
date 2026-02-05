@@ -1,0 +1,1732 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>QUOTEX QUANTUM AI BOT v7.0 | Official Trading Assistant</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+        }
+
+        :root {
+            --quotex-primary: #001b2c;
+            --quotex-secondary: #00d2ff;
+            --quotex-accent: #0066ff;
+            --quotex-dark: #000a14;
+            --quotex-card: #001729;
+            --gradient-primary: linear-gradient(135deg, #001b2c 0%, #003356 100%);
+            --gradient-secondary: linear-gradient(90deg, #00d2ff 0%, #0066ff 100%);
+            --gradient-success: linear-gradient(90deg, #00d47e 0%, #00ff9d 100%);
+            --gradient-danger: linear-gradient(90deg, #ff375f 0%, #ff0066 100%);
+            --gradient-gold: linear-gradient(90deg, #ffd700 0%, #ffaa00 100%);
+            --gradient-vip: linear-gradient(90deg, #ff0080 0%, #ff8c00 100%);
+            --text-primary: #ffffff;
+            --text-secondary: #a0c8e0;
+            --text-muted: #6b94b3;
+            --border-color: rgba(0, 210, 255, 0.2);
+            --shadow-primary: 0 10px 30px rgba(0, 27, 44, 0.5);
+            --shadow-glow: 0 0 30px rgba(0, 210, 255, 0.4);
+            --shadow-success: 0 0 30px rgba(0, 255, 157, 0.4);
+            --shadow-danger: 0 0 30px rgba(255, 55, 95, 0.4);
+            --shadow-vip: 0 0 30px rgba(255, 0, 128, 0.4);
+        }
+
+        body {
+            background: var(--gradient-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+            background-image: 
+                radial-gradient(circle at 15% 10%, rgba(0, 210, 255, 0.15) 0%, transparent 25%),
+                radial-gradient(circle at 85% 90%, rgba(0, 255, 157, 0.1) 0%, transparent 25%);
+        }
+
+        /* Luxury Background Elements */
+        .luxury-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .bg-grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(0, 210, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 210, 255, 0.05) 1px, transparent 1px);
+            background-size: 50px 50px;
+            opacity: 0.3;
+        }
+
+        .bg-glow {
+            position: absolute;
+            top: 30%;
+            left: 10%;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(0, 210, 255, 0.1) 0%, transparent 70%);
+            filter: blur(60px);
+        }
+
+        .bg-glow-2 {
+            position: absolute;
+            bottom: 20%;
+            right: 10%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(0, 255, 157, 0.08) 0%, transparent 70%);
+            filter: blur(50px);
+        }
+
+        /* Master Password Overlay */
+        .master-password-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 11, 22, 0.98);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            animation: fadeIn 0.5s ease;
+        }
+
+        /* Registration Verification Overlay */
+        .verification-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 11, 22, 0.98);
+            z-index: 9998;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .verification-card, .master-password-card {
+            width: 100%;
+            max-width: 600px;
+            background: rgba(0, 27, 44, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-primary), var(--shadow-vip);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .verification-card::before, .master-password-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: var(--gradient-vip);
+        }
+
+        .verification-logo {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: var(--gradient-vip);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+        }
+
+        .verification-badge {
+            display: inline-block;
+            background: var(--gradient-vip);
+            color: var(--text-primary);
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-weight: 700;
+            margin-bottom: 25px;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+        }
+
+        .verification-message {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .register-btn {
+            width: 100%;
+            padding: 25px;
+            background: var(--gradient-vip);
+            border: none;
+            border-radius: 15px;
+            color: var(--text-primary);
+            font-size: 1.3rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 25px;
+            letter-spacing: 1px;
+            text-decoration: none;
+            display: block;
+        }
+
+        .register-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(255, 0, 128, 0.4);
+        }
+
+        .verification-input-container {
+            margin: 25px 0;
+        }
+
+        .verification-input {
+            width: 100%;
+            padding: 20px;
+            background: rgba(0, 23, 41, 0.8);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 1.1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .verification-input:focus {
+            outline: none;
+            border-color: var(--quotex-secondary);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .verification-note {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-top: 20px;
+            font-style: italic;
+        }
+
+        .master-password-input-container {
+            position: relative;
+            margin: 30px 0;
+        }
+
+        .master-password-input {
+            width: 100%;
+            padding: 20px 25px;
+            background: rgba(0, 23, 41, 0.8);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 1.1rem;
+            font-weight: 500;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+        }
+
+        .master-password-input:focus {
+            outline: none;
+            border-color: var(--quotex-secondary);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .master-password-btn {
+            width: 100%;
+            padding: 20px;
+            background: var(--gradient-secondary);
+            border: none;
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+            letter-spacing: 1px;
+        }
+
+        .master-password-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 210, 255, 0.4);
+        }
+
+        .get-password-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--gradient-success);
+            color: var(--text-primary);
+            padding: 15px 30px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .get-password-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 255, 157, 0.4);
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Top Navigation Bar */
+        .top-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            margin-bottom: 30px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .main-logo {
+            font-size: 2rem;
+            font-weight: 800;
+            background: var(--gradient-secondary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .version-badge {
+            background: var(--gradient-gold);
+            color: var(--quotex-primary);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .status-section {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            background: var(--gradient-success);
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .status-text {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .status-text strong {
+            color: var(--quotex-secondary);
+            font-weight: 700;
+        }
+
+        .clock-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(0, 23, 41, 0.8);
+            padding: 12px 25px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+        }
+
+        .clock-icon {
+            color: var(--quotex-secondary);
+            font-size: 1.2rem;
+        }
+
+        .clock-time {
+            font-family: 'Courier New', monospace;
+            font-weight: 700;
+            font-size: 1.3rem;
+            color: var(--text-primary);
+            letter-spacing: 2px;
+        }
+
+        /* Main Dashboard */
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        /* Control Panel */
+        .control-panel {
+            background: rgba(0, 23, 41, 0.8);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-primary);
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .panel-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: var(--gradient-secondary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .panel-badge {
+            background: var(--gradient-success);
+            color: var(--text-primary);
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        .panel-badge.expired {
+            background: var(--gradient-danger);
+        }
+
+        /* Asset Selection */
+        .asset-selector {
+            margin-bottom: 30px;
+        }
+
+        .selector-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text-secondary);
+            font-weight: 600;
+            margin-bottom: 15px;
+            font-size: 1rem;
+        }
+
+        .selector-label i {
+            color: var(--quotex-secondary);
+        }
+
+        .asset-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .asset-card {
+            background: rgba(0, 27, 44, 0.6);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .asset-card:hover {
+            border-color: var(--quotex-secondary);
+            transform: translateY(-3px);
+        }
+
+        .asset-card.active {
+            background: rgba(0, 210, 255, 0.1);
+            border-color: var(--quotex-secondary);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .asset-symbol {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .asset-name {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* Timeframe Selection */
+        .timeframe-selector {
+            margin-bottom: 40px;
+        }
+
+        .timeframe-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .timeframe-btn {
+            flex: 1;
+            padding: 18px;
+            background: rgba(0, 27, 44, 0.6);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .timeframe-btn:hover {
+            border-color: var(--quotex-secondary);
+            transform: translateY(-3px);
+        }
+
+        .timeframe-btn.active {
+            background: rgba(0, 210, 255, 0.1);
+            border-color: var(--quotex-secondary);
+            box-shadow: var(--shadow-glow);
+        }
+
+        /* Trade Button - Fixed for Mobile */
+        .trade-btn-container {
+            text-align: center;
+            margin-top: 40px;
+            padding-bottom: env(safe-area-inset-bottom, 20px);
+        }
+
+        .trade-btn {
+            width: 100%;
+            padding: 25px;
+            background: var(--gradient-secondary);
+            border: none;
+            border-radius: 15px;
+            color: var(--text-primary);
+            font-size: 1.5rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .trade-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 210, 255, 0.4);
+        }
+
+        .trade-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Results Panel */
+        .results-panel {
+            background: rgba(0, 23, 41, 0.8);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-primary);
+        }
+
+        .results-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .results-title {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: var(--gradient-secondary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .results-subtitle {
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        .prediction-container {
+            background: rgba(0, 27, 44, 0.6);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            margin-bottom: 30px;
+            border: 1px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .prediction-result {
+            font-size: 5rem;
+            font-weight: 900;
+            margin: 20px 0;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+
+        .prediction-result.call {
+            color: #00ff9d;
+            text-shadow: 0 0 30px rgba(0, 255, 157, 0.7);
+        }
+
+        .prediction-result.put {
+            color: #ff375f;
+            text-shadow: 0 0 30px rgba(255, 55, 95, 0.7);
+        }
+
+        .confidence-meter {
+            margin-top: 30px;
+        }
+
+        .confidence-label {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+        }
+
+        .confidence-value {
+            font-size: 3rem;
+            font-weight: 800;
+            background: var(--gradient-success);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Terminal Overlay */
+        .terminal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 11, 22, 0.98);
+            z-index: 9998;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            backdrop-filter: blur(5px);
+        }
+
+        .terminal {
+            width: 100%;
+            max-width: 900px;
+            height: 500px;
+            background: rgba(0, 15, 30, 0.95);
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-primary), var(--shadow-glow);
+        }
+
+        .terminal-header {
+            background: rgba(0, 27, 44, 0.95);
+            padding: 20px 30px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .terminal-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            background: var(--gradient-secondary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .terminal-close {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.8rem;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .terminal-close:hover {
+            color: var(--quotex-secondary);
+        }
+
+        .terminal-body {
+            padding: 30px;
+            height: calc(100% - 70px);
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        .terminal-line {
+            margin-bottom: 15px;
+            opacity: 0;
+            animation: fadeInFast 0.05s forwards;
+        }
+
+        @keyframes fadeInFast {
+            to { opacity: 1; }
+        }
+
+        .terminal-prompt {
+            color: var(--quotex-secondary);
+        }
+
+        .terminal-text {
+            color: var(--text-primary);
+        }
+
+        .terminal-success {
+            color: #00ff9d;
+        }
+
+        .terminal-error {
+            color: #ff375f;
+        }
+
+        .loading-bar {
+            width: 100%;
+            height: 10px;
+            background: rgba(0, 210, 255, 0.1);
+            border-radius: 5px;
+            margin-top: 20px;
+            overflow: hidden;
+        }
+
+        .loading-progress {
+            height: 100%;
+            width: 0%;
+            background: var(--gradient-secondary);
+            border-radius: 5px;
+            transition: width 0.1s ease;
+        }
+
+        /* Live Profits Feed - ONLY GREEN/PROFITS */
+        .profits-feed {
+            background: rgba(0, 23, 41, 0.8);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-primary);
+            margin-top: 30px;
+        }
+
+        .feed-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .feed-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: var(--gradient-secondary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .feed-stats {
+            display: flex;
+            gap: 20px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: var(--gradient-success);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+        .feed-content {
+            height: 250px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .feed-scroll {
+            position: absolute;
+            width: 100%;
+            animation: scrollUp 40s linear infinite;
+        }
+
+        @keyframes scrollUp {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-50%); }
+        }
+
+        .profit-item {
+            background: rgba(0, 27, 44, 0.6);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-left: 4px solid #00ff9d;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: transform 0.3s ease;
+        }
+
+        .profit-item:hover {
+            transform: translateX(5px);
+        }
+
+        .profit-user {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: var(--gradient-success);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+
+        .user-info h4 {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .user-info p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .profit-details {
+            text-align: right;
+        }
+
+        .profit-amount {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #00ff9d;
+        }
+
+        .profit-pair {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 50px;
+            padding-top: 30px;
+            border-top: 1px solid var(--border-color);
+            text-align: center;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 20px;
+        }
+
+        .footer-link {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s ease;
+        }
+
+        .footer-link:hover {
+            color: var(--quotex-secondary);
+        }
+
+        .copyright {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+
+        /* Responsive Design - Fixed for Mobile */
+        @media (max-width: 1200px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .prediction-result {
+                font-size: 4rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .top-nav {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+            
+            .status-section {
+                flex-direction: column;
+                gap: 15px;
+                width: 100%;
+            }
+            
+            .clock-container {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .asset-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .timeframe-buttons {
+                flex-direction: column;
+            }
+            
+            .prediction-result {
+                font-size: 3rem;
+            }
+            
+            .feed-header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .feed-stats {
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+            
+            .control-panel, .results-panel {
+                padding: 20px;
+            }
+            
+            .verification-card, .master-password-card {
+                padding: 30px 20px;
+                margin: 10px;
+            }
+            
+            .register-btn, .trade-btn {
+                padding: 20px;
+                font-size: 1.2rem;
+                min-height: 70px;
+            }
+            
+            .trade-btn-container {
+                position: sticky;
+                bottom: 0;
+                background: linear-gradient(transparent, rgba(0, 27, 44, 0.9));
+                padding-top: 20px;
+                padding-bottom: max(20px, env(safe-area-inset-bottom));
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-logo {
+                font-size: 1.5rem;
+            }
+            
+            .version-badge {
+                font-size: 0.7rem;
+                padding: 3px 10px;
+            }
+            
+            .asset-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .prediction-result {
+                font-size: 2.5rem;
+            }
+            
+            .confidence-value {
+                font-size: 2rem;
+            }
+            
+            .verification-card, .master-password-card {
+                padding: 25px 15px;
+            }
+            
+            .verification-logo {
+                font-size: 2rem;
+            }
+        }
+
+        /* Safe area for modern mobile browsers */
+        @supports (padding: max(0px)) {
+            .container, .trade-btn-container {
+                padding-left: max(20px, env(safe-area-inset-left));
+                padding-right: max(20px, env(safe-area-inset-right));
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Luxury Background Elements -->
+    <div class="luxury-bg">
+        <div class="bg-grid"></div>
+        <div class="bg-glow"></div>
+        <div class="bg-glow-2"></div>
+    </div>
+    
+    <!-- Master Password Overlay -->
+    <div class="master-password-overlay" id="masterPasswordOverlay">
+        <div class="master-password-card">
+            <div class="verification-logo">QUOTEX AI BOT</div>
+            <div class="verification-badge">VIP ACCESS REQUIRED</div>
+            
+            <p style="color: var(--text-secondary); margin-bottom: 10px;">Welcome to Official Quotex Quantum AI Bot v7.0</p>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 30px;">Enter Master Password to access premium trading signals</p>
+            
+            <div class="master-password-input-container">
+                <input type="password" class="master-password-input" id="masterPasswordInput" placeholder="Enter Master Password">
+            </div>
+            
+            <button class="master-password-btn" id="masterPasswordBtn">
+                <i class="fas fa-lock"></i> UNLOCK QUANTUM AI BOT
+            </button>
+            
+            <div style="margin-top: 25px; padding-top: 25px; border-top: 1px solid var(--border-color);">
+                <p style="color: var(--text-muted); margin-bottom: 15px;">Don't have the password?</p>
+                <a href="https://t.me/ANAX_VIP_ADMIN" target="_blank" class="get-password-btn">
+                    <i class="fab fa-telegram"></i> GET PASSWORD FROM ADMIN
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Registration Verification Overlay -->
+    <div class="verification-overlay" id="verificationOverlay">
+        <div class="verification-card">
+            <div class="verification-logo">100% QUANTUM ACCURACY</div>
+            <div class="verification-badge">VIP REGISTRATION REQUIRED</div>
+            
+            <div class="verification-message">
+                To unlock 100% Quantum Accuracy and access all premium features, you must register through our Official Server Link.
+            </div>
+            
+            <a href="https://broker-qx.pro/sign-up/?affiliate=ANAX_VIP_777" target="_blank" class="register-btn">
+                <i class="fas fa-crown"></i> REGISTER & UNLOCK VIP ACCURACY
+            </a>
+            
+            <div class="verification-input-container">
+                <input type="text" class="verification-input" id="quotexIdInput" placeholder="Enter your Quotex ID (e.g., 12345678)">
+            </div>
+            
+            <button class="master-password-btn" id="verifyQuotexIdBtn">
+                <i class="fas fa-check-circle"></i> VERIFY MY QUOTEX ID
+            </button>
+            
+            <div class="verification-note">
+                Already registered? Enter your Quotex ID above to verify and unlock full accuracy.
+            </div>
+        </div>
+    </div>
+    
+    <!-- Main Container -->
+    <div class="container" style="display: none;" id="mainContainer">
+        <!-- Top Navigation -->
+        <div class="top-nav">
+            <div class="logo-section">
+                <div class="main-logo">QUOTEX AI BOT</div>
+                <div class="version-badge">v7.0 QUANTUM</div>
+            </div>
+            
+            <div class="status-section">
+                <div class="status-indicator">
+                    <div class="status-dot"></div>
+                    <div class="status-text">
+                        SERVER: <strong>SYNCED WITH QUOTEX API</strong>
+                    </div>
+                </div>
+                
+                <div class="clock-container">
+                    <i class="fas fa-clock clock-icon"></i>
+                    <div class="clock-time" id="liveClock">00:00:00</div>
+                </div>
+                
+                <div class="panel-badge" id="activationStatus">
+                    <i class="fas fa-crown"></i> VIP ACTIVE
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Dashboard -->
+        <div class="dashboard">
+            <!-- Control Panel -->
+            <div class="control-panel">
+                <div class="panel-header">
+                    <div class="panel-title">TRADING CONTROLS</div>
+                    <div class="panel-badge" id="sessionStats">0 WINS TODAY</div>
+                </div>
+                
+                <!-- Asset Selection -->
+                <div class="asset-selector">
+                    <div class="selector-label">
+                        <i class="fas fa-chart-line"></i> SELECT TRADING PAIR
+                    </div>
+                    <div class="asset-grid" id="assetGrid">
+                        <!-- Assets will be populated by JavaScript -->
+                    </div>
+                </div>
+                
+                <!-- Timeframe Selection -->
+                <div class="timeframe-selector">
+                    <div class="selector-label">
+                        <i class="fas fa-clock"></i> SELECT TIMEFRAME
+                    </div>
+                    <div class="timeframe-buttons">
+                        <button class="timeframe-btn active" data-time="1">1 MINUTE</button>
+                        <button class="timeframe-btn" data-time="2">2 MINUTES</button>
+                        <button class="timeframe-btn" data-time="5">5 MINUTES</button>
+                    </div>
+                </div>
+                
+                <!-- Trade Button -->
+                <div class="trade-btn-container">
+                    <button class="trade-btn" id="tradeBtn">
+                        <i class="fas fa-bolt"></i> EXECUTE QUANTUM PREDICTION
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Results Panel -->
+            <div class="results-panel">
+                <div class="results-header">
+                    <div class="results-title">QUANTUM AI PREDICTION</div>
+                    <div class="results-subtitle">Powered by Neural Network Analysis & Real-time Market Data</div>
+                </div>
+                
+                <div class="prediction-container" id="predictionContainer">
+                    <div class="prediction-result" id="predictionResult">WAITING...</div>
+                    <div class="confidence-meter">
+                        <div class="confidence-label">AI CONFIDENCE LEVEL</div>
+                        <div class="confidence-value" id="confidenceValue">--%</div>
+                    </div>
+                </div>
+                
+                <div class="panel-header">
+                    <div class="panel-title">TRADE HISTORY</div>
+                    <div class="panel-badge" id="winRate">--% WIN RATE</div>
+                </div>
+                
+                <div style="margin-top: 20px; text-align: center; color: var(--text-muted); font-size: 0.9rem;">
+                    <i class="fas fa-info-circle"></i> Last prediction updated: <span id="lastUpdate">--:--:--</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Live Profits Feed - ONLY PROFITS -->
+        <div class="profits-feed">
+            <div class="feed-header">
+                <div class="feed-title">
+                    <i class="fas fa-broadcast-tower"></i> LIVE PROFITS STREAM
+                </div>
+                <div class="feed-stats">
+                    <div class="stat-item">
+                        <div class="stat-value" id="totalProfits">$0</div>
+                        <div class="stat-label">TODAY'S PROFITS</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="activeTraders">0</div>
+                        <div class="stat-label">ACTIVE TRADERS</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="successRate">0%</div>
+                        <div class="stat-label">SUCCESS RATE</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="feed-content">
+                <div class="feed-scroll" id="profitsFeed">
+                    <!-- Profit items will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <div class="footer">
+            <div class="footer-links">
+                <a href="#" class="footer-link">Privacy Policy</a>
+                <a href="#" class="footer-link">Terms of Service</a>
+                <a href="https://t.me/ANAX_VIP_ADMIN" target="_blank" class="footer-link">Support</a>
+                <a href="#" class="footer-link">Documentation</a>
+            </div>
+            <div class="copyright">
+                © 2023 QUOTEX OFFICIAL QUANTUM AI BOT v7.0 | This product is not affiliated with Quotex.io
+            </div>
+        </div>
+    </div>
+    
+    <!-- Terminal Overlay -->
+    <div class="terminal-overlay" id="terminalOverlay">
+        <div class="terminal">
+            <div class="terminal-header">
+                <div class="terminal-title">QUOTEX QUANTUM AI ENGINE v7.0 - INJECTION IN PROGRESS</div>
+                <button class="terminal-close" id="terminalClose">&times;</button>
+            </div>
+            <div class="terminal-body" id="terminalBody">
+                <!-- Terminal lines will be added here dynamically -->
+            </div>
+            <div class="loading-bar">
+                <div class="loading-progress" id="loadingProgress"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const masterPasswordOverlay = document.getElementById('masterPasswordOverlay');
+        const verificationOverlay = document.getElementById('verificationOverlay');
+        const masterPasswordInput = document.getElementById('masterPasswordInput');
+        const masterPasswordBtn = document.getElementById('masterPasswordBtn');
+        const quotexIdInput = document.getElementById('quotexIdInput');
+        const verifyQuotexIdBtn = document.getElementById('verifyQuotexIdBtn');
+        const mainContainer = document.getElementById('mainContainer');
+        const activationStatus = document.getElementById('activationStatus');
+        const liveClock = document.getElementById('liveClock');
+        const assetGrid = document.getElementById('assetGrid');
+        const timeframeBtns = document.querySelectorAll('.timeframe-btn');
+        const tradeBtn = document.getElementById('tradeBtn');
+        const predictionContainer = document.getElementById('predictionContainer');
+        const predictionResult = document.getElementById('predictionResult');
+        const confidenceValue = document.getElementById('confidenceValue');
+        const terminalOverlay = document.getElementById('terminalOverlay');
+        const terminalBody = document.getElementById('terminalBody');
+        const loadingProgress = document.getElementById('loadingProgress');
+        const terminalClose = document.getElementById('terminalClose');
+        const profitsFeed = document.getElementById('profitsFeed');
+        const totalProfits = document.getElementById('totalProfits');
+        const activeTraders = document.getElementById('activeTraders');
+        const successRate = document.getElementById('successRate');
+        const sessionStats = document.getElementById('sessionStats');
+        const winRate = document.getElementById('winRate');
+        const lastUpdate = document.getElementById('lastUpdate');
+        
+        // Configuration
+        const MASTER_PASSWORD = 'ANAX_VIP_7';
+        const YOUR_QUOTEX_AFFILIATE_LINK = 'https://broker-qx.pro/sign-up/?affiliate=ANAX_VIP_777';
+        const YOUR_TELEGRAM_LINK = 'https://t.me/ANAX_VIP_ADMIN';
+        
+        // State variables
+        let selectedAsset = 'EUR/USD';
+        let selectedTime = 1;
+        let isAnalyzing = false;
+        let isActivated = false;
+        let isVerified = false;
+        let winCount = 0;
+        let totalTrades = 0;
+        let liveProfits = 0;
+        
+        // Assets data
+        const assets = [
+            { symbol: 'EUR/USD', name: 'Euro vs US Dollar', type: 'forex' },
+            { symbol: 'GBP/JPY', name: 'British Pound vs Yen', type: 'forex' },
+            { symbol: 'BTC/USD', name: 'Bitcoin vs Dollar', type: 'crypto' },
+            { symbol: 'ETH/USD', name: 'Ethereum vs Dollar', type: 'crypto' },
+            { symbol: 'XAU/USD', name: 'Gold vs Dollar', type: 'commodity' },
+            { symbol: 'CRYPTO IDX', name: 'Crypto Index', type: 'index' }
+        ];
+        
+        // Fast terminal messages (1.5 seconds total)
+        const terminalMessages = [
+            {text: "Initializing Quantum AI Core v7.0...", delay: 100, type: "normal"},
+            {text: "Establishing Secure Connection to Quotex API...", delay: 150, type: "normal"},
+            {text: "Authenticating with Quotex Servers... SUCCESS", delay: 100, type: "success"},
+            {text: "Accessing Real-time Market Data Feed...", delay: 120, type: "normal"},
+            {text: "Downloading Institutional Order Flow Data...", delay: 100, type: "normal"},
+            {text: "Analyzing 2,548,912 Historical Patterns...", delay: 150, type: "normal"},
+            {text: "Detecting Whale Accumulation/Distribution...", delay: 100, type: "normal"},
+            {text: "Running Quantum Neural Network Simulation...", delay: 150, type: "normal"},
+            {text: "Pattern Match Found: 99.8% Confidence...", delay: 100, type: "success"},
+            {text: "QUANTUM PREDICTION GENERATED SUCCESSFULLY!", delay: 100, type: "success"}
+        ];
+        
+        // Live profits data - ONLY PROFITS
+        const profitUsers = [
+            { name: "Alex_Trader", id: "U9283", avatar: "AT" },
+            { name: "Crypto_Whale", id: "U1250", avatar: "CW" },
+            { name: "FX_Master", id: "U0780", avatar: "FM" },
+            { name: "Gold_Hunter", id: "U0350", avatar: "GH" },
+            { name: "Quantum_AI", id: "U1850", avatar: "QA" },
+            { name: "Binary_King", id: "U0950", avatar: "BK" },
+            { name: "Profit_Seeker", id: "U0410", avatar: "PS" },
+            { name: "Signal_Hunter", id: "U1120", avatar: "SH" },
+            { name: "Day_Trader_Pro", id: "U0620", avatar: "DP" }
+        ];
+        
+        const profitPairs = ['EUR/USD', 'GBP/JPY', 'BTC/USD', 'ETH/USD', 'XAU/USD', 'CRYPTO IDX'];
+        
+        // Initialize the application
+        function initApp() {
+            updateClock();
+            initializeAssets();
+            initializeLiveProfits();
+            updateStats();
+            
+            // Check if already passed master password
+            const savedPassword = localStorage.getItem('quotexMasterPassword');
+            const savedVerification = localStorage.getItem('quotexVerified');
+            
+            if (savedPassword === MASTER_PASSWORD) {
+                masterPasswordOverlay.style.display = 'none';
+                
+                if (savedVerification === 'true') {
+                    verificationOverlay.style.display = 'none';
+                    mainContainer.style.display = 'block';
+                    isActivated = true;
+                    isVerified = true;
+                } else {
+                    verificationOverlay.style.display = 'flex';
+                }
+            }
+        }
+        
+        // Live clock function
+        function updateClock() {
+            const now = new Date();
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const seconds = now.getSeconds().toString().padStart(2, '0');
+            const timeString = `${hours}:${minutes}:${seconds}`;
+            
+            liveClock.textContent = timeString;
+            
+            // Update every second
+            setTimeout(updateClock, 1000);
+        }
+        
+        // Initialize asset grid
+        function initializeAssets() {
+            assetGrid.innerHTML = '';
+            
+            assets.forEach((asset, index) => {
+                const assetCard = document.createElement('div');
+                assetCard.className = `asset-card ${index === 0 ? 'active' : ''}`;
+                assetCard.setAttribute('data-symbol', asset.symbol);
+                
+                assetCard.innerHTML = `
+                    <div class="asset-symbol">${asset.symbol}</div>
+                    <div class="asset-name">${asset.name}</div>
+                `;
+                
+                assetCard.addEventListener('click', () => {
+                    document.querySelectorAll('.asset-card').forEach(card => {
+                        card.classList.remove('active');
+                    });
+                    assetCard.classList.add('active');
+                    selectedAsset = asset.symbol;
+                });
+                
+                assetGrid.appendChild(assetCard);
+            });
+        }
+        
+        // Initialize live profits feed - ONLY PROFITS
+        function initializeLiveProfits() {
+            profitsFeed.innerHTML = '';
+            
+            // Generate initial profit items (duplicated for seamless scroll) - ALL PROFITS
+            for (let i = 0; i < 2; i++) {
+                for (let j = 0; j < 15; j++) {
+                    const user = profitUsers[Math.floor(Math.random() * profitUsers.length)];
+                    const pair = profitPairs[Math.floor(Math.random() * profitPairs.length)];
+                    const amount = Math.floor(Math.random() * 2000) + 100;
+                    
+                    const profitItem = document.createElement('div');
+                    profitItem.className = 'profit-item';
+                    
+                    profitItem.innerHTML = `
+                        <div class="profit-user">
+                            <div class="user-avatar">${user.avatar}</div>
+                            <div class="user-info">
+                                <h4>${user.name}</h4>
+                                <p>${user.id}</p>
+                            </div>
+                        </div>
+                        <div class="profit-details">
+                            <div class="profit-amount">+$${amount}</div>
+                            <div class="profit-pair">${pair}</div>
+                        </div>
+                    `;
+                    
+                    profitsFeed.appendChild(profitItem);
+                }
+            }
+        }
+        
+        // Update statistics
+        function updateStats() {
+            const traders = Math.floor(Math.random() * 50) + 150;
+            const rate = Math.floor(Math.random() * 15) + 85;
+            const profits = Math.floor(Math.random() * 50000) + 50000;
+            
+            activeTraders.textContent = traders;
+            successRate.textContent = `${rate}%`;
+            totalProfits.textContent = `$${profits.toLocaleString()}`;
+            sessionStats.textContent = `${winCount} WINS TODAY`;
+            
+            if (totalTrades > 0) {
+                const winRatePercent = Math.round((winCount / totalTrades) * 100);
+                winRate.textContent = `${winRatePercent}% WIN RATE`;
+            }
+        }
+        
+        // Master Password verification
+        masterPasswordBtn.addEventListener('click', () => {
+            const enteredPassword = masterPasswordInput.value.trim();
+            
+            if (enteredPassword === MASTER_PASSWORD) {
+                // Correct password
+                localStorage.setItem('quotexMasterPassword', MASTER_PASSWORD);
+                masterPasswordOverlay.style.display = 'none';
+                verificationOverlay.style.display = 'flex';
+                showNotification('Master Password Accepted! Please complete registration verification.');
+            } else {
+                // Wrong password
+                showNotification('Incorrect Master Password! Please contact admin.', 'error');
+                masterPasswordInput.style.borderColor = '#ff375f';
+                setTimeout(() => {
+                    masterPasswordInput.style.borderColor = 'var(--border-color)';
+                }, 1000);
+            }
+        });
+        
+        // Quotex ID Verification
+        verifyQuotexIdBtn.addEventListener('click', () => {
+            const quotexId = quotexIdInput.value.trim();
+            
+            if (quotexId.length >= 6) {
+                // Mark as verified
+                isVerified = true;
+                localStorage.setItem('quotexVerified', 'true');
+                verificationOverlay.style.display = 'none';
+                mainContainer.style.display = 'block';
+                isActivated = true;
+                
+                showNotification(`Quotex ID ${quotexId} verified! 100% Quantum Accuracy unlocked.`);
+                
+                // Update activation badge
+                activationStatus.innerHTML = '<i class="fas fa-crown"></i> VIP VERIFIED';
+            } else {
+                showNotification('Please enter a valid Quotex ID (minimum 6 characters)', 'error');
+                quotexIdInput.style.borderColor = '#ff375f';
+                setTimeout(() => {
+                    quotexIdInput.style.borderColor = 'var(--border-color)';
+                }, 1000);
+            }
+        });
+        
+        // Timeframe selection
+        timeframeBtns.forEach(button => {
+            button.addEventListener('click', () => {
+                timeframeBtns.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                selectedTime = parseInt(button.getAttribute('data-time'));
+            });
+        });
+        
+        // Trade button click
+        tradeBtn.addEventListener('click', () => {
+            if (isAnalyzing) return;
+            
+            if (!isActivated || !isVerified) {
+                verificationOverlay.style.display = 'flex';
+                showNotification('Please complete registration verification first!', 'error');
+                return;
+            }
+            
+            startAnalysis();
+        });
+        
+        // Start analysis
+        function startAnalysis() {
+            isAnalyzing = true;
+            
+            // Reset terminal
+            terminalBody.innerHTML = '';
+            loadingProgress.style.width = '0%';
+            
+            // Show terminal
+            terminalOverlay.style.display = 'flex';
+            
+            // Start terminal simulation
+            simulateTerminal();
+        }
+        
+        // Simulate terminal - FAST (1.5 seconds)
+        async function simulateTerminal() {
+            let totalDelay = 0;
+            
+            for (let i = 0; i < terminalMessages.length; i++) {
+                const msg = terminalMessages[i];
+                
+                // Add delay before showing this message
+                await delay(totalDelay);
+                
+                // Create terminal line
+                const line = document.createElement('div');
+                line.className = 'terminal-line';
+                
+                // Add prompt
+                const prompt = document.createElement('span');
+                prompt.className = 'terminal-prompt';
+                prompt.textContent = 'quantum@quotex:~$ ';
+                line.appendChild(prompt);
+                
+                // Add message text
+                const text = document.createElement('span');
+                text.className = `terminal-text ${msg.type}`;
+                text.textContent = msg.text;
+                line.appendChild(text);
+                
+                // Add to terminal
+                terminalBody.appendChild(line);
+                
+                // Scroll to bottom
+                terminalBody.scrollTop = terminalBody.scrollHeight;
+                
+                // Update loading progress
+                loadingProgress.style.width = `${(i + 1) / terminalMessages.length * 100}%`;
+                
+                // Add delay for next message
+                totalDelay += msg.delay;
+            }
+            
+            // Final delay before showing result
+            await delay(200);
+            
+            // Hide terminal and show result
+            terminalOverlay.style.display = 'none';
+            
+            // Generate prediction
+            generatePrediction();
+            
+            isAnalyzing = false;
+        }
+        
+        // Generate prediction
+        function generatePrediction() {
+            // Bias toward CALL for higher success rate
+            const isCall = Math.random() > 0.35;
+            
+            // Generate confidence between 96% and 99.8%
+            const confidence = (96 + Math.random() * 3.8).toFixed(1);
+            
+            // Update UI
+            if (isCall) {
+                predictionResult.textContent = "CALL ↑";
+                predictionResult.className = "prediction-result call";
+                predictionContainer.style.boxShadow = "var(--shadow-primary), var(--shadow-success)";
+            } else {
+                predictionResult.textContent = "PUT ↓";
+                predictionResult.className = "prediction-result put";
+                predictionContainer.style.boxShadow = "var(--shadow-primary), var(--shadow-danger)";
+            }
+            
+            confidenceValue.textContent = `${confidence}%`;
+            
+            // Update stats
+            totalTrades++;
+            if (Math.random() > 0.25) { // 75% win rate for verified users
+                winCount++;
+            }
+            
+            // Update time
+            const now = new Date();
+            lastUpdate.textContent = now.toLocaleTimeString();
+            
+            // Update all statistics
+            updateStats();
+            
+            // Add new profit to feed - ONLY PROFITS
+            addNewProfit();
+            
+            // Show success notification
+            showNotification(`Quantum Prediction Generated! ${confidence}% Confidence`);
+        }
+        
+        // Add new profit to feed - ONLY PROFITS
+        function addNewProfit() {
+            const user = profitUsers[Math.floor(Math.random() * profitUsers.length)];
+            const pair = profitPairs[Math.floor(Math.random() * profitPairs.length)];
+            const amount = Math.floor(Math.random() * 2000) + 100;
+            
+            const profitItem = document.createElement('div');
+            profitItem.className = 'profit-item';
+            
+            profitItem.innerHTML = `
+                <div class="profit-user">
+                    <div class="user-avatar">${user.avatar}</div>
+                    <div class="user-info">
+                        <h4>${user.name}</h4>
+                        <p>${user.id}</p>
+                    </div>
+                </div>
+                <div class="profit-details">
+                    <div class="profit-amount">+$${amount}</div>
+                    <div class="profit-pair">${pair}</div>
+                </div>
+            `;
+            
+            // Add to beginning and end for seamless scroll
+            profitsFeed.prepend(profitItem);
+            const clone = profitItem.cloneNode(true);
+            profitsFeed.appendChild(clone);
+            
+            // Update live profits
+            liveProfits += amount;
+            totalProfits.textContent = `$${(parseInt(totalProfits.textContent.replace('$', '').replace(',', '')) + amount).toLocaleString()}`;
+        }
+        
+        // Show notification
+        function showNotification(message, type = 'success') {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${type === 'error' ? 'var(--gradient-danger)' : 'var(--gradient-success)'};
+                color: white;
+                padding: 15px 25px;
+                border-radius: 10px;
+                font-weight: 600;
+                z-index: 10000;
+                animation: slideIn 0.3s ease;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+                max-width: 300px;
+            `;
+            
+            notification.innerHTML = `<i class="fas fa-${type === 'error' ? 'exclamation-circle' : 'check-circle'}"></i> ${message}`;
+            document.body.appendChild(notification);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+        
+        // Utility function for delays
+        function delay(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+        
+        // Close terminal
+        terminalClose.addEventListener('click', () => {
+            if (!isAnalyzing) {
+                terminalOverlay.style.display = 'none';
+            }
+        });
+        
+        // Allow Enter key for password and ID verification
+        masterPasswordInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                masterPasswordBtn.click();
+            }
+        });
+        
+        quotexIdInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                verifyQuotexIdBtn.click();
+            }
+        });
+        
+        // Initialize the app
+        initApp();
+        
+        // Update stats every 30 seconds
+        setInterval(updateStats, 30000);
+        
+        // Add new profit every 10-20 seconds
+        setInterval(() => {
+            if (isActivated && isVerified) {
+                addNewProfit();
+            }
+        }, Math.random() * 10000 + 10000);
+        
+        // Mobile screen fit adjustment
+        window.addEventListener('resize', () => {
+            const vh = window.innerHeight * 0.01;
+            document.documentElement.style.setProperty('--vh', `${vh}px`);
+        });
+        
+        // Initial call for mobile screen fit
+        window.dispatchEvent(new Event('resize'));
+    </script>
+</body>
+</html>
