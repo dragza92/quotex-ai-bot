@@ -119,7 +119,7 @@
             height: 100%;
             background: rgba(0, 11, 22, 0.98);
             z-index: 9998;
-            display: none;
+            display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
@@ -304,6 +304,7 @@
             padding: 20px;
             position: relative;
             z-index: 1;
+            display: none; /* Initially hidden until verification */
         }
 
         /* Top Navigation Bar */
@@ -1058,7 +1059,7 @@
             
             <div style="margin-top: 25px; padding-top: 25px; border-top: 1px solid var(--border-color);">
                 <p style="color: var(--text-muted); margin-bottom: 15px;">Don't have the password?</p>
-                <a href="https://t.me/zeoumin" target="_blank" class="get-password-btn">
+                <a href="https://t.me/zeoumin?text=QUOTEX%20BOT%20ACCESS%20KEY" target="_blank" class="get-password-btn">
                     <i class="fab fa-telegram"></i> GET PASSWORD FROM ADMIN
                 </a>
             </div>
@@ -1075,7 +1076,7 @@
                 To unlock 100% Quantum Accuracy and access all premium features, you must register through our Official Server Link.
             </div>
             
-            <a href="https://broker-qx.pro/sign-up/?affiliate=ANAX_VIP_777" target="_blank" class="register-btn">
+            <a href="https://broker-qx.pro/sign-up/?lid=1744351" target="_blank" class="register-btn">
                 <i class="fas fa-crown"></i> REGISTER & UNLOCK VIP ACCURACY
             </a>
             
@@ -1094,7 +1095,7 @@
     </div>
     
     <!-- Main Container -->
-    <div class="container" style="display: none;" id="mainContainer">
+    <div class="container" id="mainContainer">
         <!-- Top Navigation -->
         <div class="top-nav">
             <div class="logo-section">
@@ -1220,7 +1221,7 @@
             <div class="footer-links">
                 <a href="#" class="footer-link">Privacy Policy</a>
                 <a href="#" class="footer-link">Terms of Service</a>
-                <a href="https://t.me/ANAX_VIP_ADMIN" target="_blank" class="footer-link">Support</a>
+                <a href="https://t.me/zeoumin?text=QUOTEX%20BOT%20ACCESS%20KEY" target="_blank" class="footer-link">Support</a>
                 <a href="#" class="footer-link">Documentation</a>
             </div>
             <div class="copyright">
@@ -1276,8 +1277,8 @@
         
         // Configuration
         const MASTER_PASSWORD = 'ANAX_VIP_7';
-        const YOUR_QUOTEX_AFFILIATE_LINK = 'https://broker-qx.pro/sign-up/?affiliate=ANAX_VIP_777';
-        const YOUR_TELEGRAM_LINK = 'https://t.me/ANAX_VIP_ADMIN';
+        const YOUR_QUOTEX_AFFILIATE_LINK = 'https://broker-qx.pro/sign-up/?lid=1744351';
+        const YOUR_TELEGRAM_LINK = 'https://t.me/zeoumin?text=QUOTEX%20BOT%20ACCESS%20KEY';
         
         // State variables
         let selectedAsset = 'EUR/USD';
@@ -1349,7 +1350,10 @@
                     isVerified = true;
                 } else {
                     verificationOverlay.style.display = 'flex';
+                    mainContainer.style.display = 'none'; // Ensure main container is hidden
                 }
+            } else {
+                mainContainer.style.display = 'none'; // Ensure main container is hidden
             }
         }
         
@@ -1452,6 +1456,7 @@
                 localStorage.setItem('quotexMasterPassword', MASTER_PASSWORD);
                 masterPasswordOverlay.style.display = 'none';
                 verificationOverlay.style.display = 'flex';
+                mainContainer.style.display = 'none'; // Keep main container hidden
                 showNotification('Master Password Accepted! Please complete registration verification.');
             } else {
                 // Wrong password
@@ -1503,6 +1508,7 @@
             
             if (!isActivated || !isVerified) {
                 verificationOverlay.style.display = 'flex';
+                mainContainer.style.display = 'none'; // Hide main container
                 showNotification('Please complete registration verification first!', 'error');
                 return;
             }
